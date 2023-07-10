@@ -1,0 +1,32 @@
+.pagination a {
+    font-size: 13px;
+    font-weight: bold;
+    margin: 0 10px;
+    display: inline-block;
+    padding: 8px;
+  }
+  
+  .pagination {
+    text-align: center;
+    margin: 35px 0;
+  }
+  
+  ul.pagination-menu li {
+    display: inline-block;
+    border: 2px solid #f1f3f9;
+    margin: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  ul.pagination-menu li.selected {
+    border: 2px solid #27dc69;
+  }
+  ul.pagination-menu li.next.disabled {
+    pointer-events: none;
+    color: #e0e0e0;
+  }
+  ul.pagination-menu li.previous.disabled {
+    pointer-events: none;
+    color: #e0e0e0;
+  }

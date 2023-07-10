@@ -1,9 +1,13 @@
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 const inputStyle =
-  "border-[1px] dark:border-[#D0D5DD] w-full py-2 md:py-2.5 px-2.5 md:px-3 rounded-[8px] mt-1 dark:bg-[#8A8F98] bg-[#F8FFF9]  text-black dark:placeholder-[white] text-sm md:text-base";
+  "border-[1px] focus:ring-2 focus:ring-transparent focus:border-none input focus-visible:border-red-500 dark:border-[#D0D5DD] w-full py-2 md:py-2.5 px-2.5 md:px-3 rounded-[8px] mt-1 dark:bg-[#8A8F98] bg-[#F8FFF9]  text-black dark:placeholder-[white] text-sm md:text-base";
 
 const AddUser = () => {
+
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -30,6 +34,7 @@ const AddUser = () => {
       .then((result) => {
         //console.log(result);
         toast.success(`${data.name} is added successfully`);
+        navigate('/view-all-user');
       });
 
     reset();
@@ -38,7 +43,7 @@ const AddUser = () => {
   return (
     <div className="w-[80%] md:w-[70%] lg:w-[50%] mx-auto my-[60px]">
       
-      <div className=" flex flex-col border-[1px] dark:bordder-[#8A8F98] justify-between gap-5 bg-[#D1FFD0] dark:bg-[#1C202A] p-5 md:p-10 rounded-[30px]">
+      <div className=" flex flex-col border-[1px] dark:bordder-[#8A8F98] justify-between gap-5 bg-[#D1FFD0] dark:bg-[#1C202A] p-5 md:p-10 rounded-[10px]">
       <h2 className="text-2xl font-semibold">Add user</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
           <div>
@@ -53,7 +58,7 @@ const AddUser = () => {
               name="name"
               type="text"
               placeholder="Enter you name"
-              className={inputStyle}
+              className={`${inputStyle}`}
               {...register("name", { required: "Enter you name" })}
               aria-invalid={errors.name ? "true" : "false"}
             />

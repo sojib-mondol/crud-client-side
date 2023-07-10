@@ -12,12 +12,12 @@ const Navbar = () => {
         <div>
       <nav className="flex justify-between lg:justify-normal items-center py-4 px-10 bg-white/80 backdrop-blur-md shadow-md w-full sticky top-0 left-0 right-0 z-10">
         <div className="flex items-center">
-          <a className="cursor-pointer">
+          <div className="cursor-pointer">
             <h3 className="text-2xl font-medium text-blue-500 mr-[44px]">
               {/* <img src="sd" alt="this is logo img" /> */}
               <Link to='/'>Demo app</Link>
             </h3>
-          </a>
+          </div>
         </div>
 
         <div className="lg:flex hidden gap-x-[44px] ">
