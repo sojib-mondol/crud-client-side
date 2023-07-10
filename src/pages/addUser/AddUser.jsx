@@ -23,7 +23,7 @@ const AddUser = () => {
     //console.log("userDetails :", userDetails);
 
     // save user to the database
-    fetch("http://localhost:5000/api/user", {
+    fetch("https://crud-server-side-seven.vercel.app/api/user", {
       method: "POST",
       headers: {
         "content-type": "application/json",

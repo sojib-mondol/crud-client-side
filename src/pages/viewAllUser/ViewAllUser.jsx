@@ -3,6 +3,8 @@ import { useState } from "react";
 import ReactPaginate from "react-paginate";
 import "./viewAllUser.css";
 import { toast } from "react-hot-toast";
+import { Link } from "react-router-dom";
+import Loading from "../../components/loading/Loading";
 
 const ViewAllUser = () => {
   const [items, setItems] = useState([]);
@@ -14,7 +16,7 @@ const ViewAllUser = () => {
   const [modal, setModal] = useState(false);
 
   const getSIngleUser = (id) => {
-    fetch(`http://localhost:5000/api/user/${id}`)
+    fetch(`https://crud-server-side-seven.vercel.app/api/user/${id}`)
       .then((res) => res.json())
       .then((data) => setSingleUser(data));
   };
@@ -28,9 +30,8 @@ const ViewAllUser = () => {
   } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      const res = await fetch("http://localhost:5000/api/users");
+      const res = await fetch("https://crud-server-side-seven.vercel.app/api/users");
       const users = await res.json();
-      console.log("Dataaaaaaaaaaaaaaaaaaa", users);
       setItems(users);
       return users;
     },
@@ -38,7 +39,7 @@ const ViewAllUser = () => {
 
   // for delete
   const handleDelete = (id) => {
-    fetch(`http://localhost:5000/api/user/${id}`, {
+    fetch(`https://crud-server-side-seven.vercel.app/api/user/${id}`, {
       method: "DELETE",
       headers: {
         //authorization: `bearer ${localStorage.getItem('accessToken')}`
@@ -55,7 +56,7 @@ const ViewAllUser = () => {
   };
 
   if (isLoading) {
-    return <span>Loading...</span>;
+    return <Loading/>;
   }
 
   if (isError) {
@@ -74,7 +75,6 @@ const ViewAllUser = () => {
     setItemOffset(newOffset);
   };
 
-  
   return (
     <div className="flex flex-col  mt-[40px] items-center justify-center ">
       <p className="text-2xl font-semibold">All Users</p>
@@ -107,43 +107,63 @@ const ViewAllUser = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
-                {currentItems?.length === 0 ? <p className="px-[15px] py-[5px]">No user avilabe. Please add user</p> :
-                currentItems?.map((user, i) => (
-                    <tr onClick={() => getSIngleUser(user?._id)} key={i}>
-                      <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
-                        {i + 1}
-                      </td>
-                      <td className="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
-                        {user?.name}
-                      </td>
-                      <td className="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
-                        <button className=" mt-[10px] btn-info text-white px-[20px] text-[16px] py-[2px] rounded-[4px]">
-                          View
-                        </button>
-                        <button className="ml-[20px] mt-[10px] btn-primary text-white px-[20px] text-[16px] py-[2px] rounded-[4px]">
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => setModal(true)}
-                          className="ml-[20px] mt-[10px] btn-secondary  text-white px-[20px] text-[16px] py-[2px] rounded-[4px]"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))} 
+                  {currentItems?.length === 0 ? (
+                    <p className="px-[15px] py-[5px]">
+                      No user avilabe. Please add user
+                    </p>
+                  ) : (
+                    currentItems?.map((user, i) => (
+                      <tr onClick={() => getSIngleUser(user?._id)} key={i}>
+                        <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
+                          {i + 1}
+                        </td>
+                        <td className="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
+                          {user?.name}
+                        </td>
+                        <td className="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
+                          <Link to={`/view-details/${user?._id}`}>
+                            <button className=" mt-[10px] btn-info text-white px-[20px] text-[16px] py-[2px] rounded-[4px]">
+                              View
+                            </button>
+                          </Link>
+                          <Link to={`/update-user/${user?._id}`}>
+                            <button className="ml-[20px] mt-[10px] btn-primary text-white px-[20px] text-[16px] py-[2px] rounded-[4px]">
+                              Edit
+                            </button>
+                          </Link>
+                          <button
+                            onClick={() => setModal(true)}
+                            className="ml-[20px] mt-[10px] btn-secondary  text-white px-[20px] text-[16px] py-[2px] rounded-[4px]"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
 
               {modal && (
                 <div className="bg-slate-800 bg-opacity-50 flex justify-center items-center absolute top-0 right-0 bottom-0 left-0">
-                <div className="bg-white px-16 py-14 rounded-md text-center">
-                  <h1 className="text-xl mb-4 font-bold text-slate-500">Do you Want Delete</h1>
-                  <button onClick={() => setModal(false)} className=" bg-indigo-500 px-4 py-2 rounded-md text-md text-white">Cancel</button>
-                  <button onClick={() => handleDelete(singleUser?._id)
-                }className=" bg-red-500 px-7 py-2 ml-2 rounded-md text-md text-white font-semibold">Ok</button>
+                  <div className="bg-white px-16 py-14 rounded-md text-center">
+                    <h1 className="text-xl mb-4 font-bold text-slate-500">
+                      Do you Want Delete
+                    </h1>
+                    <button
+                      onClick={() => setModal(false)}
+                      className=" bg-indigo-500 px-4 py-2 rounded-md text-md text-white"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => handleDelete(singleUser?._id)}
+                      className=" bg-red-500 px-7 py-2 ml-2 rounded-md text-md text-white font-semibold"
+                    >
+                      Ok
+                    </button>
+                  </div>
                 </div>
-              </div>
               )}
             </div>
           </div>

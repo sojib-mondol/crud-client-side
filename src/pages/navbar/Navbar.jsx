@@ -15,7 +15,7 @@ const Navbar = () => {
           <div className="cursor-pointer">
             <h3 className="text-2xl font-medium text-blue-500 mr-[44px]">
               {/* <img src="sd" alt="this is logo img" /> */}
-              <Link to='/'>Demo app</Link>
+              <Link to='/'>User Manager</Link>
             </h3>
           </div>
         </div>

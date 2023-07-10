@@ -1,10 +1,11 @@
 import React from 'react';
+import ViewAllUser from '../viewAllUser/ViewAllUser';
 
 
 const Home = () => {
     return (
         <div>
-          <h2>this is my home</h2>
+          <ViewAllUser/>
         </div>
     );
 };
