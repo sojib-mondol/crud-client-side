@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import Loading from "../../components/loading/Loading";
 
 const ViewAllUser = () => {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState("");
   const [itemOffset, setItemOffset] = useState(0);
 
   const [singleUser, setSingleUser] = useState([]);
@@ -30,7 +30,9 @@ const ViewAllUser = () => {
   } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      const res = await fetch("https://crud-server-side-seven.vercel.app/api/users");
+      const res = await fetch(
+        "https://crud-server-side-seven.vercel.app/api/users"
+      );
       const users = await res.json();
       setItems(users);
       return users;
@@ -56,7 +58,7 @@ const ViewAllUser = () => {
   };
 
   if (isLoading) {
-    return <Loading/>;
+    return <Loading />;
   }
 
   if (isError) {
@@ -65,6 +67,8 @@ const ViewAllUser = () => {
 
   const itemsPerPage = 4;
   const endOffset = itemOffset + itemsPerPage;
+  // console.log(typeof(itemOffset), typeof(endOffset))
+
   const currentItems = items?.slice(itemOffset, endOffset);
   const pageCount = Math?.ceil(items?.length / itemsPerPage);
   const handlePageClick = (event) => {
@@ -96,6 +100,13 @@ const ViewAllUser = () => {
                       scope="col"
                       className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400"
                     >
+                      Image
+                    </th>
+
+                    <th
+                      scope="col"
+                      className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400"
+                    >
                       Name
                     </th>
                     <th
@@ -116,6 +127,13 @@ const ViewAllUser = () => {
                       <tr onClick={() => getSIngleUser(user?._id)} key={i}>
                         <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
                           {i + 1}
+                        </td>
+                        <td className="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
+                          <div className="avatar">
+                            <div className="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                              <img src={user?.img} />
+                            </div>
+                          </div>
                         </td>
                         <td className="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
                           {user?.name}

@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
@@ -7,11 +6,11 @@ const inputStyle =
   "border-[1px] focus:ring-2 focus:ring-transparent focus:border-none input focus-visible:border-red-500 dark:border-[#D0D5DD] w-full py-2 md:py-2.5 px-2.5 md:px-3 rounded-[8px] mt-1 dark:bg-[#8A8F98] bg-[#F8FFF9]  text-black dark:placeholder-[white] text-sm md:text-base";
 
 const UpdateUser = () => {
-  const [items, setItems] = useState([]);
   const [User, SetUser] = useState([]);
   const params = useParams();
   const navigate = useNavigate();
   //console.log("params:", params);
+  const imageBBhostKey = import.meta.env.VITE_IMGBBKEY;
 
   const {
     register,
@@ -19,28 +18,45 @@ const UpdateUser = () => {
     reset,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data) => {
-    const userDetails = {
-      name: data?.name,
-      email: data?.email,
-      phone: data?.phone,
-    };
-
-    
-    //save task to the database
-  fetch(`https://crud-server-side-seven.vercel.app/api/update/${params?.id}`, {
-    method: "PUT",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify(userDetails),
-  })
-    .then((res) => res.json())
-    .then((result) => {
-      toast.success("User updated successfully");
-      navigate(`/view-details/${params?.id}`);
-    });
-  }
+  const handleAdduser = (data) => {
+    const image = data.img[0];
+    const formData = new FormData();
+    formData.append("image", image);
+    const url = `https://api.imgbb.com/1/upload?key=${imageBBhostKey}`;
+    fetch(url, {
+      method: "POST",
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then((imgData) => {
+        if (imgData.success) {
+          //console.log(imgData.data.url);
+          const userDetails = {
+            name: data?.name,
+            email: data?.email,
+            phone: data?.phone,
+            img: imgData.data.url,
+          };
+          //save task to the database
+          fetch(
+            `https://crud-server-side-seven.vercel.app/api/update/${params?.id}`,
+            {
+              method: "PUT",
+              headers: {
+                "content-type": "application/json",
+              },
+              body: JSON.stringify(userDetails),
+            }
+          )
+            .then((res) => res.json())
+            .then((result) => {
+              toast.success("User updated successfully");
+              reset();
+              navigate(`/view-details/${params?.id}`);
+            });
+        }
+      });
+  };
 
   useEffect(() => {
     fetch(`https://crud-server-side-seven.vercel.app/api/user/${params?.id}`)
@@ -49,7 +65,7 @@ const UpdateUser = () => {
       .catch((err) => {
         console.log(err);
       });
-  }, [params.id]); 
+  }, [params.id]);
 
   return (
     <div>
@@ -57,7 +73,7 @@ const UpdateUser = () => {
         <div className=" flex flex-col border-[1px] dark:bordder-[#8A8F98] justify-between gap-5 bg-[#CBC3E3] dark:bg-[#1C202A] p-5 md:p-10 rounded-[10px]">
           <h2 className="text-2xl font-semibold">Update user info</h2>
           <form
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(handleAdduser)}
             className="flex flex-col gap-5"
           >
             <div>
@@ -74,7 +90,7 @@ const UpdateUser = () => {
                 placeholder="Enter you name"
                 defaultValue={User.name}
                 className={`${inputStyle}`}
-                {...register("name", )}
+                {...register("name")}
                 aria-invalid={errors.name ? "true" : "false"}
               />
               {errors.name && (
@@ -98,7 +114,7 @@ const UpdateUser = () => {
                 defaultValue={User.email}
                 placeholder="your@email.com"
                 className={inputStyle}
-                {...register("email", )}
+                {...register("email")}
                 aria-invalid={errors.email ? "true" : "false"}
               />
               {errors.email && (
@@ -121,12 +137,34 @@ const UpdateUser = () => {
                 defaultValue={User.phone}
                 placeholder="89484 95894"
                 className={inputStyle}
-                {...register("phone", )}
+                {...register("phone")}
                 aria-invalid={errors.phone ? "true" : "false"}
               />
               {errors.phone && (
                 <p role="alert" className="text-red-600">
                   {errors.phone.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor="img"
+                className="dark:text-[#E4E4E4] text-xs md:text-sm"
+              >
+                Profile Pictre
+                {/* <span className="text-[#EB5757]">*</span> */}
+              </label>
+              <input
+                name="img"
+                type="file"
+                placeholder="input profile picture"
+                className={`${inputStyle}`}
+                {...register("img", { required: "Input profile picture" })}
+                aria-invalid={errors.img ? "true" : "false"}
+              />
+              {errors.img && (
+                <p role="alert" className="text-red-600">
+                  {errors.img.message}
                 </p>
               )}
             </div>

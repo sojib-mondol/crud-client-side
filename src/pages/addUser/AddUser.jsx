@@ -5,8 +5,8 @@ const inputStyle =
   "border-[1px] focus:ring-2 focus:ring-transparent focus:border-none input focus-visible:border-red-500 dark:border-[#D0D5DD] w-full py-2 md:py-2.5 px-2.5 md:px-3 rounded-[8px] mt-1 dark:bg-[#8A8F98] bg-[#F8FFF9]  text-black dark:placeholder-[white] text-sm md:text-base";
 
 const AddUser = () => {
-
   const navigate = useNavigate();
+  const imageBBhostKey = import.meta.env.VITE_IMGBBKEY;
 
   const {
     register,
@@ -14,38 +14,56 @@ const AddUser = () => {
     reset,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data) => {
-    const userDetails = {
-      name: data?.name,
-      email: data?.email,
-      phone: data?.phone,
-    };
-    //console.log("userDetails :", userDetails);
-
-    // save user to the database
-    fetch("https://crud-server-side-seven.vercel.app/api/user", {
+  const handleAdduser = (data) => {
+    const image = data.img[0];
+    const formData = new FormData();
+    formData.append("image", image);
+    const url = `https://api.imgbb.com/1/upload?key=${imageBBhostKey}`;
+    fetch(url, {
       method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(userDetails),
+      body: formData,
     })
       .then((res) => res.json())
-      .then((result) => {
-        //console.log(result);
-        toast.success(`${data.name} is added successfully`);
-        navigate('/view-all-user');
+      .then((imgData) => {
+        if (imgData.success) {
+          //console.log(imgData.data.url);
+          const userDetails = {
+            name: data?.name,
+            email: data?.email,
+            phone: data?.phone,
+            img: imgData.data.url,
+          };
+
+          // save user to the database
+          fetch("https://crud-server-side-seven.vercel.app/api/user", {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+            },
+            body: JSON.stringify(userDetails),
+          })
+            .then((res) => res.json())
+            .then((result) => {
+              //console.log(result);
+              toast.success(`${data.name} is added successfully`);
+              navigate("/view-all-user");
+            });
+
+          reset();
+        }
       });
 
-    reset();
+    //console.log("userDetails :", userDetails);
   };
 
   return (
     <div className="w-[80%] md:w-[70%] lg:w-[50%] mx-auto my-[60px]">
-      
       <div className=" flex flex-col border-[1px] dark:bordder-[#8A8F98] justify-between gap-5 bg-[#D1FFD0] dark:bg-[#1C202A] p-5 md:p-10 rounded-[10px]">
-      <h2 className="text-2xl font-semibold">Add user</h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+        <h2 className="text-2xl font-semibold">Add user</h2>
+        <form
+          onSubmit={handleSubmit(handleAdduser)}
+          className="flex flex-col gap-5"
+        >
           <div>
             <label
               htmlFor="name"
@@ -110,6 +128,28 @@ const AddUser = () => {
             {errors.phone && (
               <p role="alert" className="text-red-600">
                 {errors.phone.message}
+              </p>
+            )}
+          </div>
+          <div>
+            <label
+              htmlFor="img"
+              className="dark:text-[#E4E4E4] text-xs md:text-sm"
+            >
+              Profile Pictre
+              {/* <span className="text-[#EB5757]">*</span> */}
+            </label>
+            <input
+              name="img"
+              type="file"
+              placeholder="input profile picture"
+              className={`${inputStyle}`}
+              {...register("img", { required: "Input profile picture" })}
+              aria-invalid={errors.img ? "true" : "false"}
+            />
+            {errors.img && (
+              <p role="alert" className="text-red-600">
+                {errors.img.message}
               </p>
             )}
           </div>
